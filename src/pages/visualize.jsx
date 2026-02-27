@@ -1,41 +1,48 @@
 import { useState } from "react";
 import "./visualize.css";
 
-// 🔹 ROOM CONFIG (BASED ON YOUR FILES)
+// 🔹 ROOM CONFIG (FLOOR + WALL MASKS)
 const ROOMS = [
   {
     id: "small",
     label: "Small Room",
     base: "/rooms/living/small_room.jpg",
     floorMask: "/mask/Floor/small_room_floor_mask.png",
+    wallMask: "/mask/Wall/small_room_wall.png",
   },
   {
     id: "medium",
     label: "Medium Room",
     base: "/rooms/living/medium_room.jpg",
     floorMask: "/mask/Floor/medium_room_floor_mask.png",
+    wallMask: "/mask/Wall/medium_room_wall.png",
   },
   {
     id: "large",
     label: "Large Room",
     base: "/rooms/living/large_room.jpg",
     floorMask: "/mask/Floor/large_room_floor_mask.png",
+    wallMask: "/mask/Wall/large_room_wall.png",
   },
   {
     id: "extra",
     label: "Extra Large",
     base: "/rooms/living/extra_large_room.jpg",
     floorMask: "/mask/Floor/extra_large_room_floor_mask.png",
+    wallMask: "/mask/Wall/extra_large_room_wall.png",
   },
 ];
 
 export default function Visualize({ open, onClose, product }) {
   if (!open || !product) return null;
 
-  // 🔹 selected room
+  // 🔹 Selected room
   const [selectedRoom, setSelectedRoom] = useState(ROOMS[0]);
 
-  // 🔹 tile image (from backend – correct approach)
+  // 🔹 Surface selector (floor | wall)
+  const [surface, setSurface] = useState("floor");
+
+  // 🔹 Tile image from backend
   const tileUrl = product.tileImage
     ? `http://localhost:5000${product.tileImage}`
     : "";
@@ -61,6 +68,22 @@ export default function Visualize({ open, onClose, product }) {
           ))}
         </div>
 
+        {/* 🔹 FLOOR / WALL TOGGLE */}
+        <div className="surface-toggle">
+          <button
+            className={surface === "floor" ? "active" : ""}
+            onClick={() => setSurface("floor")}
+          >
+            Floor
+          </button>
+          <button
+            className={surface === "wall" ? "active" : ""}
+            onClick={() => setSurface("wall")}
+          >
+            Wall
+          </button>
+        </div>
+
         {/* 🔹 VISUALIZATION */}
         <div className="visualize-wrapper">
           <div className="room-wrapper">
@@ -71,13 +94,21 @@ export default function Visualize({ open, onClose, product }) {
               alt="Room"
             />
 
-            {/* Floor Tile Overlay */}
+            {/* Tile / Wall Overlay */}
             <div
               className="tile-overlay"
               style={{
                 backgroundImage: tileUrl ? `url(${tileUrl})` : "none",
-                WebkitMaskImage: `url(${selectedRoom.floorMask})`,
-                maskImage: `url(${selectedRoom.floorMask})`,
+                WebkitMaskImage: `url(${
+                  surface === "wall"
+                    ? selectedRoom.wallMask
+                    : selectedRoom.floorMask
+                })`,
+                maskImage: `url(${
+                  surface === "wall"
+                    ? selectedRoom.wallMask
+                    : selectedRoom.floorMask
+                })`,
               }}
             />
           </div>
@@ -85,7 +116,7 @@ export default function Visualize({ open, onClose, product }) {
           <div className="visualize-info">
             <h2>{product.name}</h2>
             <p>
-              Select a room above to preview this tile on the floor.
+              Select a room and preview this tile on the {surface}.
             </p>
           </div>
         </div>

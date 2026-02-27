@@ -24,11 +24,13 @@ const CATEGORIES = [
 
 function AdminDashboard() {
   const [products, setProducts] = useState([]);
+  const [enquiries, setEnquiries] = useState([]); // ✅ ADDON
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [filterCategory, setFilterCategory] = useState("");
   const [filterSeries, setFilterSeries] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [form, setForm] = useState({
     name: "",
@@ -51,8 +53,19 @@ function AdminDashboard() {
     setProducts(data);
   };
 
+  // ✅ ADDON
+  const fetchEnquiries = async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/contact/all`);
+    const data = await res.json();
+    setEnquiries(data);
+  } catch (err) {
+    console.error("Failed to fetch enquiries", err);
+  }
+};
   useEffect(() => {
     fetchProducts();
+    fetchEnquiries(); // ✅ ADDON
   }, []);
 
   /* ================= HANDLERS ================= */
@@ -149,130 +162,216 @@ function AdminDashboard() {
   const filteredProducts = products.filter((p) => {
     if (filterSeries && p.series !== filterSeries) return false;
     if (filterSeries === "Endless Surface" && filterCategory) {
-      return p.category === filterCategory;
+      if (p.category !== filterCategory) return false;
     }
+    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
     return true;
   });
 
   /* ================= UI ================= */
   return (
     <div className="admin-wrapper">
-      <h1 className="admin-title">Admin Dashboard</h1>
+      <div className="admin-header">
+        <h1 className="admin-title">Admin Dashboard</h1>
+        <div className="admin-stats">
+          <div className="stat-pill">
+            <span className="stat-num">{products.length}</span>
+            <span className="stat-label">Products</span>
+          </div>
+          <div className="stat-pill">
+            <span className="stat-num">{enquiries.length}</span>
+            <span className="stat-label">Enquiries</span>
+          </div>
+        </div>
+      </div>
 
       {/* ===== FORM ===== */}
       <form className="admin-form" onSubmit={handleSubmit}>
         <h2>{editingId ? "Edit Product" : "Add Product"}</h2>
 
-        <label>Product Name</label>
-        <input name="name" value={form.name} onChange={handleChange} required />
+        <div className="form-grid">
+          <div className="form-col">
+            <label>Product Name</label>
+            <input name="name" value={form.name} onChange={handleChange} required />
 
-        <label>Series</label>
-        <select name="series" value={form.series} onChange={handleChange} required>
-          <option value="">Select Series</option>
-          {SERIES.map(s => <option key={s}>{s}</option>)}
-        </select>
-
-        {form.series === "Endless Surface" && (
-          <>
-            <label>Category</label>
-            <select name="category" value={form.category} onChange={handleChange}>
-              <option value="">Select Category</option>
-              {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+            <label>Series</label>
+            <select name="series" value={form.series} onChange={handleChange} required>
+              <option value="">Select Series</option>
+              {SERIES.map(s => <option key={s}>{s}</option>)}
             </select>
-          </>
-        )}
 
-        <label>Tile Image</label>
-        <input type="file" accept="image/*" onChange={handleTile} />
-        {tilePreview && <img className="preview-img" src={tilePreview} />}
+            {form.series === "Endless Surface" && (
+              <>
+                <label>Category</label>
+                <select name="category" value={form.category} onChange={handleChange}>
+                  <option value="">Select Category</option>
+                  {CATEGORIES.map(c => <option key={c}>{c}</option>)}
+                </select>
+              </>
+            )}
+          </div>
 
-        <label>Hover Image</label>
-        <input type="file" accept="image/*" onChange={handleHover} />
-        {hoverPreview && <img className="preview-img" src={hoverPreview} />}
+          <div className="form-col">
+            <label>Tile Image</label>
+            <input type="file" accept="image/*" onChange={handleTile} />
+            {tilePreview && <img className="preview-img" src={tilePreview} />}
+          </div>
 
-        <label>Preview Images</label>
-        <input type="file" multiple accept="image/*" onChange={handlePreviews} />
-        <div className="preview-grid">
-          {previewPreviews.map((p, i) => (
-            <img key={i} src={p} />
-          ))}
+          <div className="form-col">
+            <label>Hover Image</label>
+            <input type="file" accept="image/*" onChange={handleHover} />
+            {hoverPreview && <img className="preview-img" src={hoverPreview} />}
+          </div>
+
+          <div className="form-col">
+            <label>Preview Images</label>
+            <input type="file" multiple accept="image/*" onChange={handlePreviews} />
+            <div className="preview-grid">
+              {previewPreviews.map((p, i) => (
+                <img key={i} src={p} />
+              ))}
+            </div>
+          </div>
         </div>
 
-        <button disabled={loading}>
-          {loading ? "Saving..." : editingId ? "Update Product" : "Add Product"}
-        </button>
+        <div className="form-actions">
+          {editingId && (
+            <button type="button" className="btn-cancel" onClick={resetForm}>
+              Cancel
+            </button>
+          )}
+          <button disabled={loading}>
+            {loading ? "Saving..." : editingId ? "Update Product" : "Add Product"}
+          </button>
+        </div>
       </form>
 
       {/* ===== PRODUCTS LIST ===== */}
       <div className="admin-list">
-        <h2>Products</h2>
+        <div className="list-header">
+          <h2>Products</h2>
+          <span className="product-count">{filteredProducts.length} of {products.length}</span>
+        </div>
 
-        {/* FILTER SECTION */}
-        <div className="filter-container">
-          <div className="filter-group">
-            <label className="filter-label">Filter by Series</label>
-            <select
-              className="filter-select"
-              value={filterSeries}
-              onChange={(e) => {
-                setFilterSeries(e.target.value);
-                setFilterCategory("");
-              }}
-            >
-              <option value="">All Series</option>
-              {SERIES.map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
+        {/* Search + Filter Bar */}
+        <div className="toolbar">
+          <div className="search-wrap">
+            <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
 
-          {filterSeries === "Endless Surface" && (
+          <div className="filter-container">
             <div className="filter-group">
-              <label className="filter-label">Filter by Category</label>
+              <label className="filter-label">Series</label>
               <select
                 className="filter-select"
-                value={filterCategory}
-                onChange={(e) => setFilterCategory(e.target.value)}
+                value={filterSeries}
+                onChange={(e) => {
+                  setFilterSeries(e.target.value);
+                  setFilterCategory("");
+                }}
               >
-                <option value="">All Categories</option>
-                {CATEGORIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
+                <option value="">All Series</option>
+                {SERIES.map(s => (
+                  <option key={s} value={s}>{s}</option>
                 ))}
               </select>
             </div>
-          )}
+
+            {filterSeries === "Endless Surface" && (
+              <div className="filter-group">
+                <label className="filter-label">Category</label>
+                <select
+                  className="filter-select"
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  <option value="">All Categories</option>
+                  {CATEGORIES.map(c => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Image</th>
-              <th>Name</th>
-              <th>Series</th>
-              <th>Previews</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredProducts.map(p => (
-              <tr key={p._id}>
-                <td>
-                  <img
-                    src={`${BASE_URL}${p.tileImage}`}
-                    className="table-img"
-                  />
-                </td>
-                <td>{p.name}</td>
-                <td>{p.series}</td>
-                <td>{p.previewImages?.length || 0}</td>
-                <td>
+        {/* Product Cards Grid */}
+        <div className="product-grid">
+          {filteredProducts.length === 0 ? (
+            <div className="empty-state">No products found</div>
+          ) : (
+            filteredProducts.map(p => (
+              <div className="product-card" key={p._id}>
+                <div className="card-img-wrap">
+                  <img src={`${BASE_URL}${p.tileImage}`} className="card-img" alt={p.name} />
+                  <div className="card-badge">{p.previewImages?.length || 0} previews</div>
+                </div>
+                <div className="card-body">
+                  <p className="card-name">{p.name}</p>
+                  <p className="card-series">{p.series}</p>
+                  {p.category && <p className="card-category">{p.category}</p>}
+                </div>
+                <div className="card-actions">
                   <button className="edit" onClick={() => handleEdit(p)}>Edit</button>
                   <button className="delete" onClick={() => handleDelete(p._id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* ===== CUSTOMER ENQUIRIES (ADDON ONLY) ===== */}
+      <div className="admin-list enquiry-section">
+        <div className="list-header">
+          <h2>Customer Enquiries</h2>
+          <span className="product-count">{enquiries.length} total</span>
+        </div>
+
+        <div className="enquiry-grid">
+          {enquiries.length === 0 ? (
+            <div className="empty-state">No enquiries yet</div>
+          ) : (
+            enquiries.map(e => (
+              <div className="enquiry-card" key={e._id}>
+                <div className="enquiry-tile">
+                  {e.tileImage ? (
+                    <img
+                      src={`${BASE_URL}${e.tileImage}`}
+                      alt={e.tileName}
+                      className="enquiry-tile-img"
+                    />
+                  ) : (
+                    <div className="enquiry-no-img">No Image</div>
+                  )}
+                </div>
+                <div className="enquiry-body">
+                  <div className="enquiry-header-row">
+                    <span className="enquiry-name">{e.name}</span>
+                    <span className="enquiry-date">{new Date(e.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <div className="enquiry-phone">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    {e.phone}
+                  </div>
+                  <div className="enquiry-tile-name">{e.tileName || "Custom Upload"}</div>
+                  <p className="enquiry-message">{e.message}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

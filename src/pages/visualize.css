@@ -32,7 +32,7 @@
   display: flex;
   gap: 14px;
   overflow-x: auto;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
 }
 
 .room-thumb {
@@ -67,6 +67,27 @@
   border-color: #b68b5a;
 }
 
+/* 🔹 FLOOR / WALL TOGGLE */
+.surface-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.surface-toggle button {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #b68b5a;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.surface-toggle button.active {
+  background: #b68b5a;
+  color: #fff;
+}
+
 /* 🔹 LAYOUT */
 .visualize-wrapper {
   display: grid;
@@ -90,7 +111,7 @@
   object-fit: cover;
 }
 
-/* 🔹 TILE OVERLAY (FLOOR ONLY) */
+/* 🔹 TILE / WALL OVERLAY */
 .tile-overlay {
   position: absolute;
   inset: 0;
