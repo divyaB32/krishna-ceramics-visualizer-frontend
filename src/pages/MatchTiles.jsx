@@ -1,7 +1,6 @@
 import { useState, useRef } from "react";
 import "./MatchTiles.css";
-
-const BASE_URL = "http://localhost:5000";
+import { BASE_URL } from "../config/api";
 
 export default function MatchTiles() {
   const [tiles, setTiles] = useState([]);
@@ -11,6 +10,7 @@ export default function MatchTiles() {
 
   const handleUpload = async (file) => {
     if (!file) return;
+
     setPreview(URL.createObjectURL(file));
     setLoading(true);
 
@@ -22,10 +22,11 @@ export default function MatchTiles() {
         method: "POST",
         body: form,
       });
+
       const data = await res.json();
       setTiles(data.matches || []);
     } catch (err) {
-      console.error(err);
+      console.error("Match error:", err);
       setTiles([]);
     }
 
@@ -34,7 +35,6 @@ export default function MatchTiles() {
 
   return (
     <section className="match-page">
-      {/* HEADER */}
       <div className="match-header">
         <h1>Find Similar Tiles</h1>
         <p>
@@ -43,7 +43,6 @@ export default function MatchTiles() {
         </p>
       </div>
 
-      {/* UPLOAD */}
       <div
         className="upload-box"
         onClick={() => inputRef.current.click()}
@@ -56,20 +55,17 @@ export default function MatchTiles() {
           onChange={(e) => handleUpload(e.target.files[0])}
         />
 
-        {!preview && (
+        {!preview ? (
           <>
             <div className="upload-icon">📷</div>
             <h3>Upload Reference Image</h3>
             <span>JPG / PNG / WEBP</span>
           </>
-        )}
-
-        {preview && (
+        ) : (
           <img src={preview} alt="Preview" className="preview-img" />
         )}
       </div>
 
-      {/* LOADING */}
       {loading && (
         <div className="loading">
           <span className="spinner" />
@@ -77,7 +73,6 @@ export default function MatchTiles() {
         </div>
       )}
 
-      {/* RESULTS */}
       {!loading && tiles.length > 0 && (
         <div className="results">
           <div className="results-header">
