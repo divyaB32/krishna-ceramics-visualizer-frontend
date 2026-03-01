@@ -79,3 +79,38 @@
   height: 2px;
   background-color: #1f1f1f;
 }
+/* =========================
+   MOBILE NAVBAR FIX ONLY
+   ========================= */
+@media (max-width: 768px) {
+
+  .navbar {
+    height: auto;
+  }
+
+  .navbar-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+  }
+
+  /* Logo mobile fix */
+  .navbar-logo {
+    font-size: 24px;
+    text-align: center;
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  /* Menu stacks cleanly */
+  .navbar-menu {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .navbar-menu a {
+    font-size: 14px;
+  }
+}

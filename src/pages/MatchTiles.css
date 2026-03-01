@@ -162,3 +162,40 @@
   color: #b8935a;
   text-transform: uppercase;
 }
+ /* ---------- MATCH PAGE ---------- */
+  .match-page {
+    padding: 120px 16px 60px;
+  }
+
+  .match-header h1 {
+    font-size: 32px;
+    line-height: 1.2;
+  }
+
+  .match-header p {
+    font-size: 16px;
+  }
+
+  .upload-box {
+    width: 100%;
+    height: 260px;
+    margin-bottom: 40px;
+  }
+
+  .upload-icon {
+    font-size: 34px;
+  }
+
+  .results-header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tiles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .tile-info h4 {
+    font-size: 14px;
+  }

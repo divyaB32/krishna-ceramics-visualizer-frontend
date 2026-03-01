@@ -176,3 +176,50 @@
   background: #9c7a3f;
   color: white;
 }
+/* =====================================
+   MOBILE RESPONSIVE FIXES (ADD ONLY)
+===================================== */
+@media (max-width: 768px) {
+
+  /* ---------- COLLECTION PAGE ---------- */
+  .collection-page {
+    padding: 100px 16px 40px;
+  }
+
+  .collection-header {
+    max-width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .collection-header h1 {
+    font-size: 34px;
+    line-height: 1.2;
+  }
+
+  .collection-search {
+    max-width: 100%;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .image-wrapper {
+    height: 200px;
+  }
+
+  .product-card h3 {
+    font-size: 15px;
+  }
+
+  .details-btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  /* ---------- SERIES TABS ---------- */
+  .series-tabs {
+    gap: 20px;
+    font-size: 12px;
+  }
