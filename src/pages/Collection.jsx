@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Collection.css";
 
-const BASE_URL = "http://localhost:5000";
+/* ✅ UNIVERSAL BACKEND URL (LOCAL + PROD + MOBILE) */
+const BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-// 🔴 IMPORTANT: single safe image resolver
+/* 🔴 IMPORTANT: single safe image resolver (UNCHANGED LOGIC) */
 const getImageUrl = (img) => {
   if (!img) return "";
   if (img.startsWith("http")) return img;
@@ -14,23 +16,38 @@ const getImageUrl = (img) => {
 const Collection = () => {
   const [products, setProducts] = useState([]);
 
-  // EXISTING STATES
+  // EXISTING STATES (UNCHANGED)
   const [activeSeries, setActiveSeries] = useState("Fabula Series");
   const [activeCategory, setActiveCategory] = useState("");
 
-  // ✅ NEW: SEARCH STATE
+  // SEARCH STATE (UNCHANGED)
   const [search, setSearch] = useState("");
 
   const navigate = useNavigate();
 
+  /* ✅ MOBILE-SAFE FETCH WITH RETRY */
+  const fetchWithRetry = async (url, retries = 3) => {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Fetch failed");
+      return await res.json();
+    } catch (err) {
+      if (retries > 0) {
+        await new Promise((r) => setTimeout(r, 3000));
+        return fetchWithRetry(url, retries - 1);
+      }
+      throw err;
+    }
+  };
+
   useEffect(() => {
-    fetch(`${BASE_URL}/api/products`)
-      .then((res) => res.json())
+    fetchWithRetry(`${BASE_URL}/api/products`)
       .then((data) => {
         setProducts(data);
       })
       .catch((err) => {
         console.error("Error fetching products:", err);
+        setProducts([]);
       });
   }, []);
 
@@ -43,9 +60,8 @@ const Collection = () => {
     "GHR Surface",
   ];
 
-  // ✅ SEARCH + EXISTING FILTER LOGIC (SAFE)
+  // FILTER LOGIC (UNCHANGED)
   const filteredProducts = products.filter((product) => {
-    // series/category logic (UNCHANGED)
     if (activeSeries === "Endless Surface") {
       if (!activeCategory) return false;
       if (
@@ -58,7 +74,6 @@ const Collection = () => {
       if (product.series !== activeSeries) return false;
     }
 
-    // ✅ search filter
     if (!search) return true;
 
     const q = search.toLowerCase();
@@ -80,7 +95,6 @@ const Collection = () => {
           enchanting color combinations.
         </p>
 
-        {/* ✅ SEARCH BAR (NEW) */}
         <div className="collection-search">
           <input
             type="text"
@@ -90,7 +104,6 @@ const Collection = () => {
           />
         </div>
 
-        {/* SERIES TABS */}
         <div className="series-tabs scroll-x">
           {[
             "Fabula Series",
