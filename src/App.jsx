@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useEffect } from "react"; // ✅ ADD THIS
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -11,6 +12,13 @@ import AdminDashboard from "./pages/AdminDashboard";
 import MatchTiles from "./pages/MatchTiles";
 
 function App() {
+
+  // ✅ WAKE UP RENDER BACKEND ON APP LOAD
+  useEffect(() => {
+    fetch("https://krishna-ceramics-backend.onrender.com")
+      .catch(() => {});
+  }, []);
+
   return (
     <Router>
       <Navbar />
@@ -23,9 +31,8 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/product/:id" element={<ProductPreview />} />
           <Route path="/visualize/:id" element={<Visualize />} />
-<Route path="/admin" element={<AdminDashboard />} />
-<Route path="/match-tiles" element={<MatchTiles />} />
-
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/match-tiles" element={<MatchTiles />} />
         </Routes>
       </div>
 
