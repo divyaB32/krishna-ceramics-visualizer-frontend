@@ -27,7 +27,7 @@
   cursor: pointer;
 }
 
-/* 🔹 ROOM SELECTOR */
+/* ROOM SELECTOR */
 .room-selector {
   display: flex;
   gap: 14px;
@@ -43,7 +43,6 @@
   border-radius: 10px;
   padding: 6px;
   background: #fff;
-  transition: border 0.2s, transform 0.2s;
 }
 
 .room-thumb img {
@@ -59,15 +58,11 @@
   margin-top: 6px;
 }
 
-.room-thumb:hover {
-  transform: scale(1.03);
-}
-
 .room-thumb.active {
   border-color: #b68b5a;
 }
 
-/* 🔹 FLOOR / WALL TOGGLE */
+/* FLOOR / WALL */
 .surface-toggle {
   display: flex;
   gap: 10px;
@@ -79,8 +74,6 @@
   border-radius: 20px;
   border: 1px solid #b68b5a;
   background: #fff;
-  cursor: pointer;
-  font-size: 14px;
 }
 
 .surface-toggle button.active {
@@ -88,7 +81,7 @@
   color: #fff;
 }
 
-/* 🔹 LAYOUT */
+/* LAYOUT */
 .visualize-wrapper {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
@@ -102,7 +95,6 @@
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: 14px;
-  background: #ddd;
 }
 
 .room-base {
@@ -111,24 +103,18 @@
   object-fit: cover;
 }
 
-/* 🔹 TILE / WALL OVERLAY */
 .tile-overlay {
   position: absolute;
   inset: 0;
-
   background-repeat: repeat;
   background-size: 260px 260px;
   background-position: center;
-
   -webkit-mask-size: cover;
   mask-size: cover;
-
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-
   -webkit-mask-position: center;
   mask-position: center;
-
   pointer-events: none;
 }
 
@@ -142,79 +128,25 @@
   font-size: 14px;
   color: #555;
 }
-/* =====================================
-   MOBILE FIX – VISUALIZE MODAL
-   (ADD ONLY, DO NOT MODIFY ABOVE)
-===================================== */
+
+/* ===============================
+   MOBILE FIX
+================================ */
 @media (max-width: 768px) {
-
   .visualize-modal {
-    width: 96%;
-    max-width: 100%;
     padding: 14px;
-    border-radius: 14px;
   }
 
-  .visualize-close {
-    top: 8px;
-    right: 10px;
-    font-size: 20px;
-  }
-
-  /* ROOM SELECTOR */
-  .room-selector {
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .room-thumb {
-    min-width: 90px;
-    padding: 4px;
-  }
-
-  .room-thumb img {
-    height: 56px;
-  }
-
-  .room-thumb span {
-    font-size: 11px;
-  }
-
-  /* FLOOR / WALL TOGGLE */
-  .surface-toggle {
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-
-  .surface-toggle button {
-    padding: 6px 14px;
-    font-size: 13px;
-  }
-
-  /* MAIN LAYOUT STACKS */
   .visualize-wrapper {
     grid-template-columns: 1fr;
-    gap: 20px;
+    gap: 18px;
   }
 
-  .room-wrapper {
-    aspect-ratio: 3 / 2;
-    border-radius: 12px;
-  }
-
-  /* TILE OVERLAY SCALE */
   .tile-overlay {
     background-size: 180px 180px;
   }
 
-  /* INFO */
   .visualize-info h2 {
     font-size: 20px;
-  }
-
-  .visualize-info p {
-    font-size: 13px;
-    line-height: 1.5;
   }
 }

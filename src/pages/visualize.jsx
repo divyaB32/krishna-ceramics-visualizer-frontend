@@ -1,7 +1,17 @@
 import { useState } from "react";
 import "./visualize.css";
 
-// 🔹 ROOM CONFIG (FLOOR + WALL MASKS)
+/* ===============================
+   ✅ BACKEND BASE URL (SAFE)
+================================ */
+const API_BASE =
+  import.meta.env.MODE === "development"
+    ? "http://localhost:5000"
+    : "https://krishna-ceramics-backend.onrender.com";
+
+/* ===============================
+   ROOM CONFIG (UNCHANGED)
+================================ */
 const ROOMS = [
   {
     id: "small",
@@ -36,15 +46,14 @@ const ROOMS = [
 export default function Visualize({ open, onClose, product }) {
   if (!open || !product) return null;
 
-  // 🔹 Selected room
   const [selectedRoom, setSelectedRoom] = useState(ROOMS[0]);
-
-  // 🔹 Surface selector (floor | wall)
   const [surface, setSurface] = useState("floor");
 
-  // 🔹 Tile image from backend
+  /* ===============================
+     ✅ TILE IMAGE FROM BACKEND
+  ================================ */
   const tileUrl = product.tileImage
-    ? `http://localhost:5000${product.tileImage}`
+    ? `${API_BASE}${product.tileImage}`
     : "";
 
   return (
@@ -52,14 +61,12 @@ export default function Visualize({ open, onClose, product }) {
       <div className="visualize-modal">
         <button className="visualize-close" onClick={onClose}>✕</button>
 
-        {/* 🔹 ROOM SELECTOR */}
+        {/* ROOM SELECTOR */}
         <div className="room-selector">
           {ROOMS.map(room => (
             <div
               key={room.id}
-              className={`room-thumb ${
-                selectedRoom.id === room.id ? "active" : ""
-              }`}
+              className={`room-thumb ${selectedRoom.id === room.id ? "active" : ""}`}
               onClick={() => setSelectedRoom(room)}
             >
               <img src={room.base} alt={room.label} />
@@ -68,7 +75,7 @@ export default function Visualize({ open, onClose, product }) {
           ))}
         </div>
 
-        {/* 🔹 FLOOR / WALL TOGGLE */}
+        {/* FLOOR / WALL TOGGLE */}
         <div className="surface-toggle">
           <button
             className={surface === "floor" ? "active" : ""}
@@ -84,17 +91,15 @@ export default function Visualize({ open, onClose, product }) {
           </button>
         </div>
 
-        {/* 🔹 VISUALIZATION */}
+        {/* VISUALIZATION */}
         <div className="visualize-wrapper">
           <div className="room-wrapper">
-            {/* Base Room */}
             <img
               src={selectedRoom.base}
               className="room-base"
               alt="Room"
             />
 
-            {/* Tile / Wall Overlay */}
             <div
               className="tile-overlay"
               style={{
